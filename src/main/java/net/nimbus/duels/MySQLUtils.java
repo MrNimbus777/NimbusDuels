@@ -4,9 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -91,36 +89,6 @@ public class MySQLUtils {
             return def;
         }
     }
-
-    public static List<String> getColumnAsList(String table, String key_column, String key_value, String column) {
-        ArrayList<String> keys = new ArrayList<>();
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                keys.add(rs.getString(column));
-            }
-            return keys;
-        } catch (SQLException e) {
-            return keys;
-        }
-    }
-
-    public static List<String> getColumnAsList(String table, String column) {
-        ArrayList<String> keys = new ArrayList<>();
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                keys.add(rs.getString(column));
-            }
-            return keys;
-        } catch (SQLException e) {
-            return new ArrayList<>();
-        }
-    }
-
-
     public static void set(String table, String key_column, String key_value, String column, String value) {
         try {
             PreparedStatement st = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
@@ -128,21 +96,5 @@ public class MySQLUtils {
             st.close();
         } catch (SQLException ignored) {
         }
-    }
-
-    public static boolean exists(String table, String key_column, String key_value) {
-        try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
-            return statement.executeQuery().next();
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-    public static void remove(String table, String key_column, String key_value) {
-        try {
-            PreparedStatement st = connection.prepareStatement("SELECT * FROM " + table);
-            st.execute("DELETE FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
-            st.close();
-        } catch (SQLException ignored) {}
     }
 }
