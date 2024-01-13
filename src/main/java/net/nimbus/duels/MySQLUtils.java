@@ -62,7 +62,7 @@ public class MySQLUtils {
     }
 
     public static void inc(String uuid_string, boolean win) {
-        String column = win ? "wins" : "loses";
+        String column = win ? "wins" : "losses";
         set(Vars.TABLE, "uuid", uuid_string, column, ((int)getNum(Vars.TABLE, "uuid", uuid_string, column)+1)+"");
     }
     public static String getString(String table, String key_column, String key_value, String column) {
