@@ -14,8 +14,8 @@ public class Vars {
     public static Location LOCATION_FIRST;
     public static Location LOCATION_SECOND;
     public static ItemStack[] KIT;
+    public static String TABLE;
     static Map<UUID, ItemStack[]> contentsMap;
-    static String TABLE;
 
 
 
