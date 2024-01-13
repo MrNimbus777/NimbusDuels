@@ -3,3 +3,7 @@ main: net.nimbus.duels.NDuels
 version: 1.0
 commands:
   duel:
+  nduel:
+permissions:
+  nduel.admin:
+    default: op

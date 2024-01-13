@@ -2,9 +2,13 @@ package net.nimbus.duels;
 
 import net.nimbus.duels.commands.completers.DuelCompleter;
 import net.nimbus.duels.commands.executors.DuelExe;
+import net.nimbus.duels.commands.executors.NduelExe;
+import net.nimbus.duels.events.PlayerDeathEvents;
+import net.nimbus.duels.events.PlayerQuitEvents;
 import net.nimbus.duels.requests.Requests;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -30,9 +34,14 @@ public class NDuels extends JavaPlugin {
     public void onEnable() {
         NDuels.a = this;
         loadConfig(false);
+        Vars.init();
 
         loadCommand("duel", new DuelExe(), new DuelCompleter());
+        loadCommand("nduels", new NduelExe());
+        loadEvent(new PlayerQuitEvents());
+        loadEvent(new PlayerDeathEvents());
         MySQLUtils.connect();
+        MySQLUtils.createTable(Vars.TABLE, "uuid", "uuid varchar(255) NOT NULL", "wins int", "losses int");
     }
 
     public void onDisable() {
@@ -54,5 +63,9 @@ public class NDuels extends JavaPlugin {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    void loadEvent(Listener listener){
+        getServer().getPluginManager().registerEvents(listener, this);
     }
 }

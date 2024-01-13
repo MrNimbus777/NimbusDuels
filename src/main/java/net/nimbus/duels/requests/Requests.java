@@ -12,6 +12,17 @@ public class Requests {
         return Requests.map.getOrDefault(sender, null);
     }
 
+    public static Request getActiveBySender(UUID sender){
+        if(get(sender) == null) return null;
+        return get(sender).isActive() ? get(sender) : null;
+    }
+    public static Request getActiveByReceiver(UUID receiver){
+        for(Request request : getAll()){
+            if(request.getReceiver().equals(receiver)) if(request.isActive()) return request;
+        }
+        return null;
+    }
+
     public static List<Request> getAll(){
         return new ArrayList<>(Requests.map.values());
     }

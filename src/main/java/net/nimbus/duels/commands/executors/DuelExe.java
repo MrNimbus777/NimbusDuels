@@ -1,6 +1,5 @@
 package net.nimbus.duels.commands.executors;
 
-import net.nimbus.duels.Vars;
 import net.nimbus.duels.requests.Request;
 import net.nimbus.duels.requests.Requests;
 import org.bukkit.Bukkit;
@@ -30,9 +29,15 @@ public class DuelExe implements CommandExecutor {
             request = new Request(p.getUniqueId(), receiver.getUniqueId());
             Requests.register(request);
             request.run();
+            p.sendMessage("You have send a duel request to player " + receiver.getName());
         } else {
-            p.teleport(Vars.LOCATION_FIRST);
-            receiver.teleport(Vars.LOCATION_SECOND);
+            if(request.getReceiver().equals(receiver.getUniqueId())) request.accept();
+            else {
+                request = new Request(p.getUniqueId(), receiver.getUniqueId());
+                Requests.register(request);
+                request.run();
+                p.sendMessage("You have send a duel request to player " + receiver.getName());
+            }
         }
         return true;
     }

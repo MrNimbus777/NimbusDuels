@@ -1,10 +1,14 @@
 package net.nimbus.duels;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class MySQLUtils {
 
@@ -38,7 +42,32 @@ public class MySQLUtils {
         }
     }
 
-    public String getString(String table, String key_column, String key_value, String column) {
+    public static void createTable(String table, String primary_key, String... columns){
+        try{
+            String str = Arrays.stream(columns).collect(Collectors.joining(", "));
+            PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " +
+                    table + " (" +
+                    str + ", PRIMARY KEY (" +
+                    primary_key +"));");
+            statement.execute();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void inc(Player p, boolean win) {
+        inc(p.getUniqueId(), win);
+    }
+
+    public static void inc(UUID uuid, boolean win) {
+        inc(uuid.toString(), win);
+    }
+
+    public static void inc(String uuid_string, boolean win) {
+        String column = win ? "wins" : "loses";
+        set(Vars.TABLE, "uuid", uuid_string, column, ((int)getNum(Vars.TABLE, "uuid", uuid_string, column)+1)+"");
+    }
+    public static String getString(String table, String key_column, String key_value, String column) {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
             ResultSet rs = statement.executeQuery();
@@ -51,7 +80,19 @@ public class MySQLUtils {
         }
     }
 
-    public List<String> getColumnAsList(String table, String key_column, String key_value, String column) {
+    public static double getNum(String table, String key_column, String key_value, String column){
+        return getNum(table, key_column, key_value, column, 0);
+    }
+    public static double getNum(String table, String key_column, String key_value, String column, double def){
+        String val = getString(table, key_column, key_value, column);
+        try {
+            return Double.parseDouble(val);
+        } catch (Exception e) {
+            return def;
+        }
+    }
+
+    public static List<String> getColumnAsList(String table, String key_column, String key_value, String column) {
         ArrayList<String> keys = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
@@ -65,7 +106,7 @@ public class MySQLUtils {
         }
     }
 
-    public List<String> getColumnAsList(String table, String column) {
+    public static List<String> getColumnAsList(String table, String column) {
         ArrayList<String> keys = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table);
@@ -80,7 +121,7 @@ public class MySQLUtils {
     }
 
 
-    public void set(String table, String key_column, String key_value, String column, String value) {
+    public static void set(String table, String key_column, String key_value, String column, String value) {
         try {
             PreparedStatement st = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
             st.execute("INSERT INTO " + table + "(" + key_column + ", " + column + ") VALUES ('" + key_value + "', '" + value + "') ON DUPLICATE KEY UPDATE " + column + " = '" + value + "'");
@@ -89,7 +130,7 @@ public class MySQLUtils {
         }
     }
 
-    public boolean exists(String table, String key_column, String key_value) {
+    public static boolean exists(String table, String key_column, String key_value) {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
             return statement.executeQuery().next();
@@ -97,7 +138,7 @@ public class MySQLUtils {
             return false;
         }
     }
-    public void remove(String table, String key_column, String key_value) {
+    public static void remove(String table, String key_column, String key_value) {
         try {
             PreparedStatement st = connection.prepareStatement("SELECT * FROM " + table);
             st.execute("DELETE FROM " + table + " WHERE " + key_column + " = '" + key_value + "'");
