@@ -6,6 +6,9 @@ public class Requests {
     static Map<UUID, Request> map = new HashMap<>();
 
     public static void clear(){
+        for(Request request : getAll()){
+            request.end();
+        }
         Requests.map = new HashMap<>();
     }
     public static Request get(UUID sender){
